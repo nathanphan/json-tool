@@ -4,8 +4,10 @@ import ReactFlow, {
   Controls,
   ReactFlowProvider,
   useNodesState,
-  useEdgesState
+  useEdgesState,
+  MarkerType
 } from 'reactflow';
+import JsonNode from './components/JsonNode';
 import 'reactflow/dist/style.css';
 import { ParseJSON } from '../wailsjs/go/main/App';
 import { Container, Sidebar, JsonInput, ParseButton, FlowContainer, ErrorMessage } from './styles';
@@ -60,10 +62,19 @@ function App() {
         <ReactFlowProvider>
           <ReactFlow
             nodes={nodes}
-            edges={edges}
+            edges={edges.map(edge => ({
+              ...edge,
+              type: 'smoothstep',
+              markerEnd: { type: MarkerType.ArrowClosed }
+            }))}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
+            nodeTypes={{ jsonNode: JsonNode }}
+            defaultEdgeOptions={{ type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed } }}
             fitView
+            fitViewOptions={{ padding: 50 }}
+            defaultViewport={{ zoom: 1, x: 0, y: 0 }}
+            proOptions={{ hideAttribution: true }}
           >
             <Background />
             <Controls />
