@@ -71,6 +71,77 @@ This will launch the application in development mode with hot-reload enabled.
 └── wails.json         # Wails configuration
 ```
 
+## Example
+
+Here's an example of how the JSON Visualizer works. Consider this JSON structure:
+
+```json
+{
+  "squadName": "Super hero squad",
+  "homeTown": "Metro City",
+  "formed": 2016,
+  "secretBase": "Super tower",
+  "active": true,
+  "members": [
+    {
+      "name": "Molecule Man",
+      "age": 29,
+      "secretIdentity": "Dan Jukes",
+      "powers": [
+        "Radiation resistance",
+        "Turning tiny",
+        "Radiation"
+      ]
+    },
+    {
+      "name": "Ahihi",
+      "age": 30,
+      "secretIdentity": "Dan Jukes",
+      "powers": [
+        "Radiation resistance",
+        "Turning tiny",
+        "Radiation"
+      ]
+    }
+  ]
+}
+```
+
+When visualized in the application, it creates an interactive graph like this:
+
+![JSON Visualization Example](docs/example.png)
+
+The visualization shows how different elements in the JSON structure are connected, making it easier to understand complex data relationships.
+
+## Sample Usage
+
+Here's a sample JSON input:
+
+```json
+{
+  "name": "John Doe",
+  "age": 30,
+  "address": {
+    "street": "123 Main St",
+    "city": "New York",
+    "country": "USA"
+  },
+  "contacts": [
+    {
+      "type": "email",
+      "value": "john@example.com"
+    },
+    {
+      "type": "phone",
+      "value": "+1-555-123-4567"
+    }
+  ],
+  "isActive": true
+}
+```
+
+When visualized, this JSON structure will be displayed as an interactive graph showing the relationships between different elements.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
