@@ -71,8 +71,8 @@ func processNode(data interface{}, parentID string, idPrefix string, graph *Grap
 	// Calculate depth based on ID segments
 	depth := len(strings.Split(idPrefix, "_")) - 1
 	// Calculate position based on the node's position within its level
-	horizontalSpacing := 250.0
-	verticalSpacing := 100.0
+	horizontalSpacing := 600.0 // Increased for better horizontal separation
+	verticalSpacing := 200.0   // Increased for better vertical separation
 
 	// Calculate x position based on the current node's index at this depth
 	nodeIndex := 0
@@ -82,6 +82,9 @@ func processNode(data interface{}, parentID string, idPrefix string, graph *Grap
 		}
 	}
 
+	// Add offset to stagger nodes at the same depth
+	depthOffset := float64(depth) * 100.0
+
 	switch v := data.(type) {
 	case map[string]interface{}:
 		// Create object node
@@ -89,7 +92,7 @@ func processNode(data interface{}, parentID string, idPrefix string, graph *Grap
 			ID:   currentID,
 			Type: "object",
 			Position: map[string]interface{}{
-				"x": float64(nodeIndex) * horizontalSpacing,
+				"x": float64(nodeIndex) * horizontalSpacing + depthOffset,
 				"y": float64(depth) * verticalSpacing,
 			},
 			Data: map[string]interface{}{},
@@ -130,7 +133,7 @@ func processNode(data interface{}, parentID string, idPrefix string, graph *Grap
 			ID:   currentID,
 			Type: "array",
 			Position: map[string]interface{}{
-				"x": float64(nodeIndex) * horizontalSpacing,
+				"x": float64(nodeIndex) * horizontalSpacing + depthOffset,
 				"y": float64(depth) * verticalSpacing,
 			},
 			Data: map[string]interface{}{
@@ -158,7 +161,7 @@ func processNode(data interface{}, parentID string, idPrefix string, graph *Grap
 			ID:   currentID,
 			Type: "default",
 			Position: map[string]interface{}{
-				"x": float64(nodeIndex) * horizontalSpacing,
+				"x": float64(nodeIndex) * horizontalSpacing + depthOffset,
 				"y": float64(depth) * verticalSpacing,
 			},
 			Data: map[string]interface{}{

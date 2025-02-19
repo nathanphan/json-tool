@@ -72,7 +72,7 @@ function App() {
             nodeTypes={{ jsonNode: JsonNode }}
             defaultEdgeOptions={{ type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed } }}
             fitView
-            fitViewOptions={{ padding: 50 }}
+            fitViewOptions={{ padding: 100 }}
             defaultViewport={{ zoom: 1, x: 0, y: 0 }}
             proOptions={{ hideAttribution: true }}
           >
