@@ -12,6 +12,7 @@ import 'reactflow/dist/style.css';
 import { ParseJSON } from '../wailsjs/go/main/App';
 import { Container, Sidebar, JsonInput, ParseButton, FlowContainer, ErrorMessage } from './styles';
 import CustomNode from './components/CustomNode';
+import Layout from './components/Layout';
 
 function App() {
   const [jsonInput, setJsonInput] = useState('');
@@ -54,40 +55,42 @@ function App() {
   };
 
   return (
-    <Container>
-      <Sidebar>
-        <h2>JSON Input</h2>
-        <JsonInput
-          value={jsonInput}
-          onChange={handleJsonChange}
-          placeholder="Paste your JSON here..."
-        />
-        <ParseButton onClick={handleParse}>Parse JSON</ParseButton>
-        {error && <ErrorMessage>{error}</ErrorMessage>}
-      </Sidebar>
-      <FlowContainer>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          fitView
-          defaultEdgeOptions={{
-            style: { strokeWidth: 2 },
-            type: 'smoothstep',
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
-              color: '#999',
-            },
-          }}
-          nodesDraggable={true}
-        >
-          <Background />
-          <Controls />
-        </ReactFlow>
-      </FlowContainer>
-    </Container>
+    <Layout>
+      <Container>
+        <Sidebar>
+          <h2>JSON Input</h2>
+          <JsonInput
+            value={jsonInput}
+            onChange={handleJsonChange}
+            placeholder="Paste your JSON here..."
+          />
+          <ParseButton onClick={handleParse}>Parse JSON</ParseButton>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+        </Sidebar>
+        <FlowContainer>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            nodeTypes={nodeTypes}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            fitView
+            defaultEdgeOptions={{
+              style: { strokeWidth: 2 },
+              type: 'smoothstep',
+              markerEnd: {
+                type: MarkerType.ArrowClosed,
+                color: '#999',
+              },
+            }}
+            nodesDraggable={true}
+          >
+            <Background />
+            <Controls />
+          </ReactFlow>
+        </FlowContainer>
+      </Container>
+    </Layout>
   );
 }
 
