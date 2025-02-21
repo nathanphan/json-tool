@@ -2,14 +2,36 @@ import { memo } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import styled from '@emotion/styled';
 
+// Add interface for node data
+interface NodeData {
+  label: string;
+}
+
 const NodeContainer = styled.div`
   padding: 10px;
   border-radius: 8px;
   min-width: 150px;
+  min-height: 50px;
   background: white;
   border: 2px solid #ccc;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   font-family: 'Monaco', monospace;
+  resize: both;
+  overflow: auto;
+  
+  &:hover {
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .react-flow__handle {
+    width: 8px;
+    height: 8px;
+    background-color: #555;
+    
+    &:hover {
+      background-color: #999;
+    }
+  }
 `;
 
 const ObjectNode = styled(NodeContainer)`
@@ -56,6 +78,7 @@ const CustomNode = ({ data, type }: NodeProps<NodeData>) => {
       ? ArrayNode 
       : DefaultNode;
 
+  // Move formatLabel inside the component
   const formatLabel = (label: string) => {
     if (typeof label !== 'string') return label;
     

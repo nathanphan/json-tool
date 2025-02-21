@@ -70,11 +70,18 @@ function App() {
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
           fitView
           defaultEdgeOptions={{
-            style: { stroke: '#999', strokeWidth: 2 },
+            style: { strokeWidth: 2 },
             type: 'smoothstep',
+            markerEnd: {
+              type: MarkerType.ArrowClosed,
+              color: '#999',
+            },
           }}
+          nodesDraggable={true}
         >
           <Background />
           <Controls />
