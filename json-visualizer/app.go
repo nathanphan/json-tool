@@ -66,112 +66,112 @@ func (a *App) ParseJSON(jsonStr string) (*GraphData, error) {
 
 // processNode recursively processes JSON data and builds the graph
 func processNode(data interface{}, parentID string, idPrefix string, graph *GraphData) string {
-	currentID := idPrefix
+    currentID := idPrefix
 
-	// Calculate depth based on ID segments
-	depth := len(strings.Split(idPrefix, "_")) - 1
-	// Calculate position based on the node's position within its level
-	horizontalSpacing := 600.0 // Increased for better horizontal separation
-	verticalSpacing := 200.0   // Increased for better vertical separation
+    // Calculate depth based on ID segments
+    depth := len(strings.Split(idPrefix, "_")) - 1
+    horizontalSpacing := 600.0
+    verticalSpacing := 200.0
 
-	// Calculate x position based on the current node's index at this depth
-	nodeIndex := 0
-	for _, node := range graph.Nodes {
-		if len(strings.Split(node.ID, "_")) - 1 == depth {
-			nodeIndex++
-		}
-	}
+    nodeIndex := 0
+    for _, node := range graph.Nodes {
+        if len(strings.Split(node.ID, "_")) - 1 == depth {
+            nodeIndex++
+        }
+    }
 
-	// Add offset to stagger nodes at the same depth
-	depthOffset := float64(depth) * 100.0
+    depthOffset := float64(depth) * 100.0
 
-	switch v := data.(type) {
-	case map[string]interface{}:
-		// Create object node
-		node := Node{
-			ID:   currentID,
-			Type: "object",
-			Position: map[string]interface{}{
-				"x": float64(nodeIndex) * horizontalSpacing + depthOffset,
-				"y": float64(depth) * verticalSpacing,
-			},
-			Data: map[string]interface{}{},
-		}
+    switch v := data.(type) {
+    case map[string]interface{}:
+        // Create object node
+        node := Node{
+            ID:   currentID,
+            Type: "object",
+            Position: map[string]interface{}{
+                "x": float64(nodeIndex) * horizontalSpacing + depthOffset,
+                "y": float64(depth) * verticalSpacing,
+            },
+            Data: map[string]interface{}{},
+        }
 
-		// For root node or non-array objects, collect all primitive values in the node's data
-		if depth == 0 || parentID != "" {
-			primitiveData := make(map[string]interface{})
-			for key, value := range v {
-				switch value.(type) {
-				case map[string]interface{}, []interface{}:
-					// Process complex types separately
-					childID := fmt.Sprintf("%s_%s", currentID, key)
-					processNode(value, currentID, childID, graph)
-					// Add edge
-					graph.Edges = append(graph.Edges, Edge{
-						ID:     fmt.Sprintf("e%s-%s", currentID, childID),
-						Source: currentID,
-						Target: childID,
-					})
-				default:
-					// Collect primitive values
-					primitiveData[key] = value
-				}
-			}
-			// Add collected primitive values to node data
-			if len(primitiveData) > 0 {
-				node.Data["label"] = formatPrimitiveData(primitiveData)
-			} else {
-				node.Data["label"] = strings.TrimPrefix(strings.TrimPrefix(currentID, parentID+"_"), "0_")
-			}
-		}
-		graph.Nodes = append(graph.Nodes, node)
+        // Get the object name from the parent's key
+        objectName := strings.TrimPrefix(strings.TrimPrefix(currentID, parentID+"_"), "0_")
+        if objectName != "" {
+            node.Data["label"] = objectName + "\n"
+        }
 
-	case []interface{}:
-		// Create array node
-		node := Node{
-			ID:   currentID,
-			Type: "array",
-			Position: map[string]interface{}{
-				"x": float64(nodeIndex) * horizontalSpacing + depthOffset,
-				"y": float64(depth) * verticalSpacing,
-			},
-			Data: map[string]interface{}{
-				"label": strings.TrimPrefix(strings.TrimPrefix(currentID, parentID+"_"), "0_"),
-			},
-		}
-		graph.Nodes = append(graph.Nodes, node)
+        // Process all key-value pairs
+        primitiveData := make(map[string]interface{})
+        for key, value := range v {
+            switch value.(type) {
+            case map[string]interface{}, []interface{}:
+                // Process complex types separately
+                childID := fmt.Sprintf("%s_%s", currentID, key)
+                processNode(value, currentID, childID, graph)
+                // Add edge
+                graph.Edges = append(graph.Edges, Edge{
+                    ID:     fmt.Sprintf("e%s-%s", currentID, childID),
+                    Source: currentID,
+                    Target: childID,
+                })
+            default:
+                // Collect primitive values
+                primitiveData[key] = value
+            }
+        }
 
-		// Process array elements
-		for i, value := range v {
-			childID := fmt.Sprintf("%s_%d", currentID, i)
-			processNode(value, currentID, childID, graph)
+        // Add collected primitive values to node data
+        if len(primitiveData) > 0 {
+            existingLabel, _ := node.Data["label"].(string)
+            node.Data["label"] = existingLabel + formatPrimitiveData(primitiveData)
+        }
+        graph.Nodes = append(graph.Nodes, node)
 
-			// Add edge
-			graph.Edges = append(graph.Edges, Edge{
-				ID:     fmt.Sprintf("e%s-%s", currentID, childID),
-				Source: currentID,
-				Target: childID,
-			})
-		}
+    case []interface{}:
+        // Create array node
+        arrayName := strings.TrimPrefix(strings.TrimPrefix(currentID, parentID+"_"), "0_")
+        node := Node{
+            ID:   currentID,
+            Type: "array",
+            Position: map[string]interface{}{
+                "x": float64(nodeIndex) * horizontalSpacing + depthOffset,
+                "y": float64(depth) * verticalSpacing,
+            },
+            Data: map[string]interface{}{
+                "label": arrayName,
+            },
+        }
+        graph.Nodes = append(graph.Nodes, node)
 
-	default:
-		// Create leaf node for primitive values
-		node := Node{
-			ID:   currentID,
-			Type: "default",
-			Position: map[string]interface{}{
-				"x": float64(nodeIndex) * horizontalSpacing + depthOffset,
-				"y": float64(depth) * verticalSpacing,
-			},
-			Data: map[string]interface{}{
-				"label": fmt.Sprintf("%v", v),
-			},
-		}
-		graph.Nodes = append(graph.Nodes, node)
-	}
+        // Process array elements
+        for i, value := range v {
+            childID := fmt.Sprintf("%s_%d", currentID, i)
+            processNode(value, currentID, childID, graph)
+            graph.Edges = append(graph.Edges, Edge{
+                ID:     fmt.Sprintf("e%s-%s", currentID, childID),
+                Source: currentID,
+                Target: childID,
+            })
+        }
 
-	return currentID
+    default:
+        // Create leaf node for primitive values
+        node := Node{
+            ID:   currentID,
+            Type: "default",
+            Position: map[string]interface{}{
+                "x": float64(nodeIndex) * horizontalSpacing + depthOffset,
+                "y": float64(depth) * verticalSpacing,
+            },
+            Data: map[string]interface{}{
+                "label": fmt.Sprintf("%v", v),
+            },
+        }
+        graph.Nodes = append(graph.Nodes, node)
+    }
+
+    return currentID
 }
 
 // formatPrimitiveData formats primitive key-value pairs into a readable string

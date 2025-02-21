@@ -11,6 +11,7 @@ import JsonNode from './components/JsonNode';
 import 'reactflow/dist/style.css';
 import { ParseJSON } from '../wailsjs/go/main/App';
 import { Container, Sidebar, JsonInput, ParseButton, FlowContainer, ErrorMessage } from './styles';
+import CustomNode from './components/CustomNode';
 
 function App() {
   const [jsonInput, setJsonInput] = useState('');
@@ -46,6 +47,12 @@ function App() {
     }
   }, [jsonInput, setNodes, setEdges]);
 
+  const nodeTypes = {
+    default: CustomNode,
+    object: CustomNode,
+    array: CustomNode,
+  };
+
   return (
     <Container>
       <Sidebar>
@@ -59,27 +66,19 @@ function App() {
         {error && <ErrorMessage>{error}</ErrorMessage>}
       </Sidebar>
       <FlowContainer>
-        <ReactFlowProvider>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges.map(edge => ({
-              ...edge,
-              type: 'smoothstep',
-              markerEnd: { type: MarkerType.ArrowClosed }
-            }))}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            nodeTypes={{ jsonNode: JsonNode }}
-            defaultEdgeOptions={{ type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed } }}
-            fitView
-            fitViewOptions={{ padding: 100 }}
-            defaultViewport={{ zoom: 1, x: 0, y: 0 }}
-            proOptions={{ hideAttribution: true }}
-          >
-            <Background />
-            <Controls />
-          </ReactFlow>
-        </ReactFlowProvider>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          fitView
+          defaultEdgeOptions={{
+            style: { stroke: '#999', strokeWidth: 2 },
+            type: 'smoothstep',
+          }}
+        >
+          <Background />
+          <Controls />
+        </ReactFlow>
       </FlowContainer>
     </Container>
   );
